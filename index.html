@@ -1,0 +1,728 @@
+<!doctype html>
+<!--
+  Pennsylvania State Roleplay | Strict RP
+  Single-file website (HTML + CSS + JS)
+  - No staff listings except About section
+  - History page included
+  - Interactive Menu page where visitors pick what to see
+  - Top-right sticky menu control to switch views quickly
+  - No template literals used in JS (avoids "Unterminated template literal" issues)
+  - Designed to be GitHub Pages ready; drop this into index.html and publish
+  Author: Generated for PSRC
+  Date: 2025
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🦅 Pennsylvania State Roleplay | Strict RP</title>
+  <meta name="description" content="Pennsylvania State Roleplay — Strict RP. ER:LC styled fan server landing page with departments, history, and interactive menu." />
+  <meta name="theme-color" content="#003366" />
+
+  <!-- Inline CSS (long and detailed for a custom look) -->
+  <style>
+  /* =========================================================================
+     Global Reset
+     ========================================================================= */
+  :root{
+    --bg-1: #04101a;
+    --bg-2: #061726;
+    --card: #071623;
+    --muted: #95a5b2;
+    --accent: #003366;
+    --accent-2: #FFD700;
+    --glass: rgba(255,255,255,0.02);
+    --radius: 12px;
+    --max-width: 1160px;
+    --text: #EAF3FF;
+    --shadow: 0 10px 30px rgba(0,0,0,0.6);
+    --section-gap: 48px;
+  }
+  * { box-sizing: border-box; }
+  html,body { height: 100%; margin: 0; padding: 0; background: radial-gradient(800px 300px at 10% 10%, rgba(0,50,102,0.06), transparent), linear-gradient(180deg,var(--bg-1),var(--bg-2)); color:var(--text); font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; line-height:1.45; }
+  a { color:inherit; text-decoration:none; }
+  img { max-width:100%; display:block; height:auto; }
+
+  /* =========================================================================
+     Layout container
+     ========================================================================= */
+  .wrap { max-width: var(--max-width); margin: 28px auto; padding: 20px; }
+
+  /* =========================================================================
+     Top Navigation
+     ========================================================================= */
+  header.topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:18px; position:relative; z-index:40;
+  }
+  .brand { display:flex; gap:14px; align-items:center; }
+  .logo {
+    width:64px; height:64px; border-radius:12px; display:grid; place-items:center;
+    background: linear-gradient(135deg,var(--accent), #021428); color:var(--accent-2);
+    font-weight:800; font-family: "Roboto Mono", monospace; font-size:26px; box-shadow: var(--shadow);
+  }
+  .brand .title { font-size:18px; margin:0; }
+  .brand .sub { font-size:12px; color:var(--muted); margin-top:3px; }
+
+  nav.topnav { display:flex; gap:10px; align-items:center; margin-left:auto; }
+  .navlink {
+    padding:10px 14px; border-radius:10px; background:transparent; border:1px solid rgba(255,255,255,0.03);
+    color:var(--text); font-weight:600; font-size:13px; cursor:pointer;
+  }
+  .navlink:hover { transform:translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.6); }
+
+  /* top-right sticky control */
+  .quick-switch {
+    position: fixed; top: 24px; right: 22px; width:220px; z-index:60;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border-radius:12px; padding:10px; border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  }
+  .quick-switch h4 { margin:0 0 8px 0; font-size:13px; color:var(--accent-2); }
+  .qs-btn { display:block; width:100%; padding:8px; margin-bottom:8px; text-align:left; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.02); cursor:pointer; color:var(--text); font-weight:600; font-size:13px; }
+  .qs-btn:hover { background: rgba(255,255,255,0.02); transform:translateY(-2px); }
+
+  /* =========================================================================
+     Main content area (acts like an SPA)
+     ========================================================================= */
+  main.app {
+    margin-top:18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    border-radius:16px; padding:18px; box-shadow: var(--shadow);
+  }
+  .grid {
+    display:grid;
+    grid-template-columns: 1fr 360px;
+    gap:20px;
+    align-items:start;
+  }
+
+  /* left column */
+  .col-main { padding:10px; }
+  .panel { background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:12px; padding:18px; border:1px solid rgba(255,255,255,0.02); }
+
+  /* hero */
+  .hero {
+    display:flex; gap:18px; align-items:center; justify-content:space-between;
+    background: linear-gradient(180deg, rgba(0,30,60,0.45), rgba(0,0,0,0.08));
+    padding:22px; border-radius:12px;
+  }
+  .hero .left { flex:1; }
+  .hero h1 { font-size:22px; margin:0 0 6px 0; color:var(--accent-2); }
+  .hero p { margin:0; color:var(--muted); }
+  .hero .ctas { margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+  .btn { padding:10px 14px; border-radius:10px; background:linear-gradient(90deg,var(--accent), #064777); color:white; border:1px solid rgba(255,255,255,0.04); cursor:pointer; font-weight:700; }
+  .btn.alt { background:transparent; color:var(--accent-2); border:1px solid rgba(255,215,0,0.06); }
+
+  /* right column / sidebar */
+  aside.col-side { position:relative; }
+  .widget { background:var(--card); padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.02); }
+  .widget h3 { margin:0 0 8px 0; color:var(--accent-2); font-size:14px; }
+
+  /* Departments grid */
+  .dept-grid { display:grid; gap:12px; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); margin-top:12px; }
+  .dept-card { padding:12px; border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border:1px solid rgba(255,255,255,0.02); display:flex; gap:12px; align-items:center; }
+  .dept-card .badge { width:56px; height:56px; border-radius:10px; display:grid; place-items:center; font-weight:800; color:var(--accent-2); background: linear-gradient(180deg, rgba(255,215,0,0.06), rgba(255,255,255,0.02)); font-family: "Roboto Mono", monospace; }
+
+  /* History style */
+  .history {
+    display:flex; flex-direction:column; gap:12px; margin-top:12px;
+  }
+  .history-item { padding:14px; border-radius:10px; border-left:4px solid rgba(255,255,255,0.03); background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); }
+  .history-item h4 { margin:0 0 6px 0; color:var(--accent-2); }
+  .history-item p { margin:0; color:var(--muted); }
+
+  /* Menu page styles */
+  .menu-page { display:flex; gap:14px; flex-direction:column; margin-top:12px; }
+  .menu-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
+  .menu-card {
+    padding:12px; border-radius:10px; background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    border:1px solid rgba(255,255,255,0.02); cursor:pointer; transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .menu-card:hover { transform:translateY(-6px); box-shadow: 0 18px 40px rgba(0,0,0,0.6); }
+  .menu-card h4 { margin:0 0 6px 0; color:var(--accent-2); }
+  .menu-card p { margin:0; color:var(--muted); font-size:13px; }
+
+  /* Footer */
+  footer.site-foot { margin-top:22px; text-align:center; color:var(--muted); font-size:13px; padding:10px 0; }
+
+  /* Responsive behavior */
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: 1fr; }
+    .quick-switch { position: fixed; right:12px; top:16px; width:200px; }
+  }
+  @media (max-width: 520px) {
+    .logo { width:52px; height:52px; font-size:20px; }
+    .quick-switch { width:180px; top:12px; right:8px; padding:8px; }
+  }
+
+  /* utility classes */
+  .muted { color:var(--muted); }
+  .divider { height:1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent); margin:12px 0; border-radius:6px; }
+  .hidden { display:none; }
+  .center { text-align:center; }
+  /* extra spacing helpers for readability */
+  .spacer { height:18px; }
+
+  /* add subtle focus outlines for accessibility */
+  :focus { outline: 3px solid rgba(3,102,153,0.12); outline-offset:3px; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap" role="document">
+    <!-- Header / Topbar -->
+    <header class="topbar" role="banner">
+      <div class="brand" aria-label="Pennsylvania State Roleplay Brand">
+        <div class="logo" aria-hidden="true">PS</div>
+        <div>
+          <div class="title">🦅 Pennsylvania State Roleplay</div>
+          <div class="sub">Strict RP • ER:LC • Commonwealth-Themed</div>
+        </div>
+      </div>
+
+      <nav class="topnav" role="navigation" aria-label="Primary Navigation">
+        <button class="navlink" data-nav="home" type="button">Home</button>
+        <button class="navlink" data-nav="departments" type="button">Departments</button>
+        <button class="navlink" data-nav="history" type="button">History</button>
+        <button class="navlink" data-nav="menu" type="button">Menu</button>
+        <button class="navlink" data-nav="about" type="button">About</button>
+      </nav>
+    </header>
+
+    <!-- Quick switch (top-right) -->
+    <div class="quick-switch" role="region" aria-label="Quick Switch">
+      <h4>Quick View</h4>
+      <button class="qs-btn" data-quick="home" type="button">🏠 Home</button>
+      <button class="qs-btn" data-quick="departments" type="button">🏛 Departments</button>
+      <button class="qs-btn" data-quick="history" type="button">📜 History</button>
+      <button class="qs-btn" data-quick="menu" type="button">🧭 Menu</button>
+      <button class="qs-btn" data-quick="about" type="button">ℹ️ About</button>
+    </div>
+
+    <!-- Main app shell -->
+    <main class="app" role="main" aria-live="polite">
+      <div class="grid" role="region">
+        <!-- Left column: dynamic view -->
+        <div class="col-main" id="viewContainer" aria-live="polite">
+          <!-- Home view (default) -->
+          <section id="homeView" class="panel view" data-view="home" role="article" aria-labelledby="homeTitle">
+            <div class="hero" role="region" aria-label="Hero">
+              <div class="left">
+                <h1 id="homeTitle">Welcome to Pennsylvania State Roleplay • Strict RP</h1>
+                <p class="muted">A professional ER:LC-style roleplay community built around realism, teamwork, and respectful gameplay.</p>
+                <div class="ctas" role="group" aria-label="Primary actions">
+                  <button class="btn" data-action="openMenu" type="button">Open Menu</button>
+                  <button class="btn alt" data-action="viewHistory" type="button">Read Our History</button>
+                </div>
+                <div class="spacer"></div>
+                <p class="muted">Founded in 2025. Fan-made, ER:LC inspired. All trademarks belong to their respective owners.</p>
+              </div>
+              <div style="width:220px; text-align:center; align-self:center;">
+                <div style="width:150px; height:150px; margin:0 auto; border-radius:16px; background: linear-gradient(135deg,var(--accent), #021428); display:grid; place-items:center; box-shadow: var(--shadow);">
+                  <div style="font-family:'Roboto Mono', monospace; color:var(--accent-2); font-weight:900; font-size:34px;">PSRC</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider" aria-hidden="true"></div>
+
+            <article class="panel" aria-labelledby="deptHead" style="margin-top:14px;">
+              <h3 id="deptHead">Quick Departments</h3>
+              <p class="muted">Core agencies active on the server.</p>
+              <div class="dept-grid" id="quickDepts" aria-live="polite">
+                <!-- departments inserted by JS -->
+              </div>
+            </article>
+
+            <div class="spacer"></div>
+
+            <article class="panel" aria-labelledby="eventsHead" style="margin-top:14px;">
+              <h3 id="eventsHead">Announcements</h3>
+              <p class="muted">Important notices and upcoming events.</p>
+              <div id="announcements">
+                <!-- announcements inserted by JS -->
+              </div>
+            </article>
+          </section>
+
+          <!-- Departments view -->
+          <section id="departmentsView" class="panel view hidden" data-view="departments" role="article" aria-labelledby="departmentsTitle">
+            <h2 id="departmentsTitle">Departments</h2>
+            <p class="muted">Detailed list of playable departments in PSRC.</p>
+            <div class="dept-grid" id="departmentsList">
+              <!-- inserted by JS -->
+            </div>
+          </section>
+
+          <!-- History view -->
+          <section id="historyView" class="panel view hidden" data-view="history" role="article" aria-labelledby="historyTitle">
+            <h2 id="historyTitle">PSRC — The History</h2>
+            <p class="muted">From small beginnings to Commonwealth-level operations. Our community's timeline is designed to add lore and depth to RP.</p>
+            <div class="history" id="historyTimeline">
+              <!-- timeline items inserted by JS -->
+            </div>
+            <div class="spacer"></div>
+            <article class="panel">
+              <h3>Community Notes</h3>
+              <p class="muted">This history is community-driven. If you'd like to suggest additions, message the server founders.</p>
+            </article>
+          </section>
+
+          <!-- Menu view -->
+          <section id="menuView" class="panel view hidden" data-view="menu" role="article" aria-labelledby="menuTitle">
+            <h2 id="menuTitle">Interactive Menu</h2>
+            <p class="muted">Pick a category below to explore — the content will appear immediately without reloading the page.</p>
+
+            <div class="menu-page">
+              <div class="menu-grid" id="menuGrid">
+                <!-- several menu cards -->
+                <div class="menu-card" data-menu="overview" tabindex="0" role="button" aria-pressed="false">
+                  <h4>Overview</h4>
+                  <p>High-level description and mission statement for PSRC.</p>
+                </div>
+
+                <div class="menu-card" data-menu="federal" tabindex="0" role="button" aria-pressed="false">
+                  <h4>Federal Agencies</h4>
+                  <p>Information on FBI, DHS, USMS and federal RP roles.</p>
+                </div>
+
+                <div class="menu-card" data-menu="state" tabindex="0" role="button" aria-pressed="false">
+                  <h4>State & Local</h4>
+                  <p>PSP, PPD, County Sheriff's Office — roles and operations.</p>
+                </div>
+
+                <div class="menu-card" data-menu="fireems" tabindex="0" role="button" aria-pressed="false">
+                  <h4>Fire & EMS</h4>
+                  <p>Fire response, rescue scenarios, and EMS duties.</p>
+                </div>
+
+                <div class="menu-card" data-menu="resources" tabindex="0" role="button" aria-pressed="false">
+                  <h4>Resources</h4>
+                  <p>Guides, manuals, and quick links to help new members get started.</p>
+                </div>
+
+                <div class="menu-card" data-menu="rules" tabindex="0" role="button" aria-pressed="false">
+                  <h4>Rules Snapshot</h4>
+                  <p>Short rules to follow while roleplaying on PSRC.</p>
+                </div>
+              </div>
+
+              <div class="spacer"></div>
+
+              <div class="panel" id="menuContent" tabindex="0" role="region" aria-live="polite" aria-label="Selected menu content">
+                <h3 class="center muted">Select a menu item on the left to view details here.</h3>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- About view (contains a brief About only, no staff list) -->
+          <section id="aboutView" class="panel view hidden" data-view="about" role="article" aria-labelledby="aboutTitle">
+            <h2 id="aboutTitle">About Pennsylvania State Roleplay</h2>
+            <p class="muted">Pennsylvania State Roleplay (PSRC) is a fan-made, ER:LC-inspired community focused on realistic roleplay, structured events, and an inclusive environment for players who enjoy roleplaying LEOs, federal agents, and emergency responders.</p>
+
+            <div class="spacer"></div>
+
+            <article class="panel">
+              <h3>About This Site</h3>
+              <p class="muted">This site serves as a front for the server: presenting departments, history, and quick links. It's designed to be simple, accessible, and easy to host on GitHub Pages.</p>
+            </article>
+          </section>
+
+        </div>
+
+        <!-- Right column: sidebar info -->
+        <aside class="col-side" aria-label="Sidebar">
+          <div class="widget" role="region" aria-labelledby="linksHead">
+            <h3 id="linksHead">Quick Links</h3>
+            <p class="muted">Helpful links at a glance.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+              <a class="navlink" href="https://example.com" target="_blank" rel="noopener">🌐 Website (example)</a>
+              <a class="navlink" href="https://discord.gg/example" target="_blank" rel="noopener">💬 Join Discord</a>
+              <a class="navlink" href="#menuView" data-nav="menu">🧭 Server Menu</a>
+            </div>
+          </div>
+
+          <div class="widget" role="region" aria-labelledby="statusHead">
+            <h3 id="statusHead">Server Status</h3>
+            <p class="muted">Current: <strong id="serverStatus">Online</strong></p>
+            <p class="muted">Players (sim): <strong id="serverPlayers">—</strong></p>
+            <div class="divider" aria-hidden="true"></div>
+            <p class="muted" id="nextAnnouncement">Next event: —</p>
+          </div>
+
+          <div class="widget" role="region" aria-labelledby="contactHead">
+            <h3 id="contactHead">Contact</h3>
+            <p class="muted">Questions? Use Discord for quickest response.</p>
+            <p class="muted">Email: <a href="mailto:contact@example.com">contact@example.com</a></p>
+          </div>
+
+        </aside>
+      </div>
+
+      <footer class="site-foot" role="contentinfo">
+        🦅 Pennsylvania State Roleplay • Strict RP • Established 2025 — “Duty, Integrity, Service.”
+      </footer>
+    </main>
+  </div>
+
+  <!-- JavaScript: no template literals; create elements via DOM APIs or string concatenation -->
+  <script>
+  // ===========================================================================
+  // PSRC Single-File Frontend Script
+  // No template literals used anywhere to avoid unterminated template literal errors.
+  // ===========================================================================
+
+  (function() {
+    // Simple data used to populate the site.
+    // Replace or expand as needed.
+    var DATA = {
+      departments: [
+        { code: 'FBI', name: 'Federal Bureau of Investigation', desc: 'Investigations, counterterrorism, cybercrime and joint task forces.' },
+        { code: 'DHS', name: 'Department of Homeland Security', desc: 'HSI, FPS operations, and federal protective duties across the Commonwealth.' },
+        { code: 'USMS', name: 'U.S. Marshals Service', desc: 'Fugitive operations, court security, and witness matters.' },
+        { code: 'PSP', name: 'Pennsylvania State Police', desc: 'Statewide patrol, highway enforcement, and major incident response.' },
+        { code: 'PPD', name: 'Philadelphia Police Department', desc: 'City patrols, investigations, SWAT, and K9 operations.' },
+        { code: 'CSO', name: 'County Sheriff\'s Office', desc: 'Warrant service, court security, and county support functions.' },
+        { code: 'PFD', name: 'Philadelphia Fire Department', desc: 'Fire suppression, technical rescue, and hazmat.' },
+        { code: 'EMS', name: 'Emergency Medical Services', desc: 'Paramedics and emergency medical response across the Commonwealth.' }
+      ],
+      announcements: [
+        { id: 1, title: 'Recruitment Open', date: '2025-10-12', text: 'Recruitment is now open for new members. Join the Discord for details.' },
+        { id: 2, title: 'Training Exercise', date: '2025-10-18', text: 'Statewide training exercise — PSP & PPD will coordinate a multi-unit response.' }
+      ],
+      timeline: [
+        { year: '2024', title: 'Concept & Planning', text: 'Founders drafted the initial concept and server guidelines.' },
+        { year: '2025-01', title: 'Initial Build', text: 'Server and basic assets created; closed tests began.' },
+        { year: '2025-06', title: 'Public Launch', text: 'PSRC released to the public with core departments active.' },
+        { year: '2025-09', title: 'Commonwealth Expansion', text: 'Federal roles added and cross-agency scenarios introduced.' }
+      ],
+      // rules and resources for menu content
+      menuContent: {
+        overview: {
+          title: 'Overview',
+          body: 'Pennsylvania State Roleplay (PSRC) aims to deliver a realistic, respectful, and enjoyable roleplay experience centered on emergency response and federal/state cooperation.'
+        },
+        federal: {
+          title: 'Federal Agencies',
+          body: 'Federal roles include the FBI, DHS, and USMS. These units handle large-scale investigations, multi-agency operations, federal warrants, and national-security themed scenarios. Federal agents must coordinate with local agencies when operating within counties or cities.'
+        },
+        state: {
+          title: 'State & Local Agencies',
+          body: 'State and local units include Pennsylvania State Police, Philadelphia Police Department, and County Sheriff’s Offices. These agencies manage patrols, traffic enforcement, local investigations, and community-focused operations.'
+        },
+        fireems: {
+          title: 'Fire & EMS',
+          body: 'Fire and EMS crews respond to fires, vehicle crashes, hazardous materials incidents, and medical emergencies. Coordinated drills with LEOs are common.'
+        },
+        resources: {
+          title: 'Resources',
+          body: 'Guides, roleplay manuals, vehicle lists, and training schedules will be found in the Resources section inside Discord. Visit the website links available on the footer.'
+        },
+        rules: {
+          title: 'Rules Snapshot',
+          body: 'Keep roleplay respectful; do not use server assets without permission; follow dispatch/command instructions during ops; no OOC harassment; follow Discord community guidelines.'
+        }
+      }
+    };
+
+    // Utility helpers
+    function el(tag, attrs) {
+      var node = document.createElement(tag);
+      if (attrs) {
+        for (var key in attrs) {
+          if (!attrs.hasOwnProperty(key)) continue;
+          if (key === 'text') node.appendChild(document.createTextNode(attrs[key]));
+          else if (key === 'html') node.innerHTML = attrs[key];
+          else node.setAttribute(key, attrs[key]);
+        }
+      }
+      return node;
+    }
+
+    function select(selector) {
+      return document.querySelector(selector);
+    }
+
+    function selectAll(selector) {
+      return Array.prototype.slice.call(document.querySelectorAll(selector));
+    }
+
+    // Populate quick departments on home
+    function renderQuickDepts() {
+      var container = select('#quickDepts');
+      if (!container) return;
+      container.innerHTML = '';
+      for (var i = 0; i < DATA.departments.length; i++) {
+        var d = DATA.departments[i];
+        var card = el('article', { 'class': 'dept-card', 'role': 'article', 'aria-labelledby': 'dept-' + d.code });
+        var badge = el('div', { 'class': 'badge', 'text': d.code });
+        var wrap = el('div');
+        var title = el('h3', { 'text': d.name });
+        title.id = 'dept-' + d.code;
+        var desc = el('p', { 'text': d.desc });
+        desc.className = 'muted';
+        wrap.appendChild(title);
+        wrap.appendChild(desc);
+        card.appendChild(badge);
+        card.appendChild(wrap);
+        container.appendChild(card);
+      }
+    }
+
+    // Populate Departments view
+    function renderDepartmentsList() {
+      var list = select('#departmentsList');
+      if (!list) return;
+      list.innerHTML = '';
+      for (var i = 0; i < DATA.departments.length; i++) {
+        var d = DATA.departments[i];
+        var card = el('div', { 'class': 'dept-card' });
+        var badge = el('div', { 'class': 'badge', 'text': d.code });
+        var content = el('div');
+        var h = el('h3', { 'text': d.name });
+        var p = el('p', { 'text': d.desc });
+        p.className = 'muted';
+        content.appendChild(h);
+        content.appendChild(p);
+        card.appendChild(badge);
+        card.appendChild(content);
+        list.appendChild(card);
+      }
+    }
+
+    // Populate Announcements
+    function renderAnnouncements() {
+      var container = select('#announcements');
+      if (!container) return;
+      container.innerHTML = '';
+      for (var i = 0; i < DATA.announcements.length; i++) {
+        var a = DATA.announcements[i];
+        var box = el('div', { 'class': 'panel', 'role': 'article' });
+        var title = el('h4', { 'text': a.title });
+        var meta = el('div', { 'text': 'Date: ' + a.date });
+        meta.className = 'muted';
+        var p = el('p', { 'text': a.text });
+        p.className = 'muted';
+        box.appendChild(title);
+        box.appendChild(meta);
+        box.appendChild(el('div', { 'class': 'spacer' }));
+        box.appendChild(p);
+        container.appendChild(box);
+      }
+    }
+
+    // Populate history timeline
+    function renderHistory() {
+      var container = select('#historyTimeline');
+      if (!container) return;
+      container.innerHTML = '';
+      for (var i = 0; i < DATA.timeline.length; i++) {
+        var t = DATA.timeline[i];
+        var item = el('div', { 'class': 'history-item' });
+        var h = el('h4', { 'text': t.year + ' — ' + t.title });
+        var p = el('p', { 'text': t.text });
+        p.className = 'muted';
+        item.appendChild(h);
+        item.appendChild(p);
+        container.appendChild(item);
+      }
+    }
+
+    // Populate menu grid actions
+    function setupMenuActions() {
+      var cards = selectAll('.menu-card');
+      for (var i = 0; i < cards.length; i++) {
+        (function(idx) {
+          var c = cards[idx];
+          c.addEventListener('click', function() {
+            var key = c.getAttribute('data-menu');
+            showMenuContent(key);
+          });
+          // keyboard accessible (Enter/Space)
+          c.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              var key = c.getAttribute('data-menu');
+              showMenuContent(key);
+            }
+          });
+        })(i);
+      }
+    }
+
+    // Show menu content in right panel
+    function showMenuContent(key) {
+      var box = select('#menuContent');
+      if (!box) return;
+      box.innerHTML = '';
+      var data = DATA.menuContent[key];
+      if (!data) {
+        box.appendChild(el('h3', { 'text': 'Not found' }));
+        box.appendChild(el('p', { 'text': 'This menu item does not exist.' }));
+        return;
+      }
+      var title = el('h3', { 'text': data.title });
+      var p = el('p', { 'text': data.body });
+      p.className = 'muted';
+      box.appendChild(title);
+      box.appendChild(el('div', { 'class': 'divider' }));
+      box.appendChild(p);
+      // if special content, add extras (example)
+      if (key === 'rules') {
+        var ul = el('ul');
+        ul.style.marginTop = '12px';
+        ul.style.paddingLeft = '18px';
+        var rules = [ 'No OOC harassment', 'Do not use or redistribute server assets', 'Follow roleplay standards', 'Respect staff decisions' ];
+        for (var r = 0; r < rules.length; r++) {
+          var li = el('li', { 'text': rules[r] });
+          li.style.marginBottom = '6px';
+          ul.appendChild(li);
+        }
+        box.appendChild(ul);
+      }
+    }
+
+    // Simple SPA view switching
+    function showView(viewName) {
+      var views = selectAll('.view');
+      for (var i = 0; i < views.length; i++) {
+        var v = views[i];
+        if (v.getAttribute('data-view') === viewName) {
+          v.classList.remove('hidden');
+        } else {
+          v.classList.add('hidden');
+        }
+      }
+      // update quick-switch highlight (aria-pressed)
+      var qs = selectAll('.qs-btn');
+      for (var j = 0; j < qs.length; j++) {
+        var btn = qs[j];
+        if (btn.getAttribute('data-quick') === viewName) {
+          btn.setAttribute('aria-pressed', 'true');
+        } else {
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      }
+    }
+
+    // Hook up nav buttons
+    function setupNavigation() {
+      var navs = selectAll('[data-nav]');
+      for (var i = 0; i < navs.length; i++) {
+        (function(idx) {
+          var n = navs[idx];
+          n.addEventListener('click', function(e) {
+            var target = n.getAttribute('data-nav');
+            // if it's a hash link, navigate accordingly
+            showView(target);
+            // smooth scroll to top of main app for better UX
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        })(i);
+      }
+
+      var qs = selectAll('.qs-btn');
+      for (var k = 0; k < qs.length; k++) {
+        (function(idx) {
+          var b = qs[idx];
+          b.addEventListener('click', function() {
+            var t = b.getAttribute('data-quick');
+            showView(t);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        })(k);
+      }
+    }
+
+    // Misc: server status simulation
+    function setupServerStatus() {
+      var statusEl = select('#serverStatus');
+      var playersEl = select('#serverPlayers');
+      var nextAnn = select('#nextAnnouncement');
+
+      // initial values
+      if (statusEl) statusEl.textContent = 'Online';
+      if (playersEl) playersEl.textContent = String(12 + Math.floor(Math.random() * 90)) + ' players';
+      if (nextAnn && DATA.announcements.length > 0) nextAnn.textContent = 'Next: ' + DATA.announcements[0].title + ' on ' + DATA.announcements[0].date;
+
+      // periodic update
+      setInterval(function() {
+        if (playersEl) playersEl.textContent = String(8 + Math.floor(Math.random() * 120)) + ' players';
+      }, 8000);
+    }
+
+    // Hookup CTA buttons
+    function setupCTAs() {
+      var openMenuBtn = select('[data-action="openMenu"]');
+      if (openMenuBtn) {
+        openMenuBtn.addEventListener('click', function() {
+          showView('menu');
+        });
+      }
+      var viewHistoryBtn = select('[data-action="viewHistory"]');
+      if (viewHistoryBtn) {
+        viewHistoryBtn.addEventListener('click', function() {
+          showView('history');
+        });
+      }
+    }
+
+    // Accessibility: keyboard shortcuts for main views (H, D, M, A)
+    function setupShortcuts() {
+      window.addEventListener('keydown', function(e) {
+        if (e.altKey && e.key === 'h') { showView('home'); }
+        if (e.altKey && e.key === 'd') { showView('departments'); }
+        if (e.altKey && e.key === 'm') { showView('menu'); }
+        if (e.altKey && e.key === 'a') { showView('about'); }
+      });
+    }
+
+    // Initialize the app
+    function init() {
+      // render initial content
+      renderQuickDepts();
+      renderDepartmentsList();
+      renderAnnouncements();
+      renderHistory();
+
+      // set default view
+      showView('home');
+
+      // hook interactions
+      setupMenuActions();
+      setupNavigation();
+      setupServerStatus();
+      setupCTAs();
+      setupShortcuts();
+
+      // nice-to-have: deep link support via URL hash (optional)
+      if (location.hash) {
+        var hitch = location.hash.replace('#', '');
+        // only accept known views
+        var valid = ['home','departments','history','menu','about'];
+        for (var i = 0; i < valid.length; i++) {
+          if (valid[i] === hitch) { showView(hitch); break; }
+        }
+      }
+
+      // announce ready for screen readers
+      var ariaNode = document.createElement('div');
+      ariaNode.setAttribute('aria-live', 'polite');
+      ariaNode.className = 'hidden';
+      ariaNode.textContent = 'Pennsylvania State Roleplay site loaded';
+      document.body.appendChild(ariaNode);
+    }
+
+    // Run init after DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+  })();
+  </script>
+</body>
+</html>
