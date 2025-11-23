@@ -1,1 +1,1 @@
-# -Pennsylvania-State-Roleplay-Strict-RP
+# -Pennsylvania-State-Roleplay-Strict-w
